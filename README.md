@@ -1,4 +1,4 @@
-# pkcyber
+# cyberprobe
 
 This repository contains scripts to automate the process of scanning wireless networks, retrieving BSSIDs and channels, and monitoring those BSSIDs using a wireless adapter in monitor mode.
 
