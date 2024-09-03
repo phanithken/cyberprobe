@@ -4,10 +4,7 @@ import os
 import sys
 
 def get_bssid(ssid_list_file, output_file, interface, scan_time=10):
-    # Get the directory of the current script
     script_dir = os.path.dirname(os.path.realpath(__file__))
-
-    # Create full paths for the SSID list and output file
     ssid_list_path = os.path.join(script_dir, ssid_list_file)
     output_file_path = os.path.join(script_dir, output_file)
 
@@ -15,13 +12,11 @@ def get_bssid(ssid_list_file, output_file, interface, scan_time=10):
     with open(ssid_list_path, 'r') as file:
         ssids = [line.strip() for line in file.readlines()]
 
-    # Create a dictionary to store SSIDs and their corresponding BSSIDs
     bssid_dict = {}
 
     try:
         for ssid in ssids:
             print(f"Scanning for SSID: {ssid} using interface {interface}")
-            # Run airodump-ng command to scan for the SSID
             command = [
                 "sudo", "airodump-ng", "--essid", ssid, "--write", "scan_output", "--output-format", "csv", interface
             ]

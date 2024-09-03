@@ -3,12 +3,9 @@
 # Get the directory of the current script
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# File containing the list of SSID:BSSID, Channel pairs
 BSSID_FILE="$SCRIPT_DIR/bssids.txt"
 INTERFACE="$1"
-# Output file for monitoring results
 OUTPUT_FILE="$SCRIPT_DIR/monitoring_results.txt"
-# Log file for detailed logging
 LOG_FILE="$SCRIPT_DIR/monitoring.log"
 
 # Function to log messages with timestamps
@@ -30,7 +27,6 @@ monitor_bssids() {
         log_message "Monitoring BSSID $BSSID (SSID: $SSID) on Channel $CHANNEL using $INTERFACE..."
 
         while true; do
-            # Run airodump-ng to capture data on the specific channel
             sudo airodump-ng -c "$CHANNEL" --bssid "$BSSID" -w "$SCRIPT_DIR/$SSID-psk" "$INTERFACE" > /dev/null 2>&1
 
             # Check if a handshake was captured or BSSID was detected
