@@ -45,9 +45,10 @@ find_and_set_monitor_interface() {
         # Check if the monitor mode interface was created
         if iw dev | grep -q "${iface}mon"; then
             echo "${iface}mon"
-            return
+            return 0  # Indicating success
         else
             echo "Failed to set $iface to monitor mode. Skipping..."
+            return 1  # Indicating failure
         fi
     done
 
