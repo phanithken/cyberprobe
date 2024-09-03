@@ -72,7 +72,7 @@ echo "BSSIDs and Channels retrieved successfully."
 
 # Step 2: Run the Bash script to monitor BSSIDs
 echo "Starting monitoring of BSSIDs..."
-sudo "$SCRIPT_DIR/monitor_bssids.sh"
+sudo "$SCRIPT_DIR/monitor_bssids.sh" "$INTERFACE"
 
 echo "Monitoring complete."
 
