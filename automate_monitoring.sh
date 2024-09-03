@@ -43,12 +43,12 @@ find_and_set_monitor_interface() {
         sudo airmon-ng start "$iface" > /dev/null 2>&1
 
         # Check if the monitor mode interface was created
-        if iw dev | grep -q "${iface}mon"; then
+        if iw dev | grep -w "${iface}mon" > /dev/null 2>&1; then
             echo "${iface}mon"
-            return 0  # Indicating success
+            return 0
         else
             echo "Failed to set $iface to monitor mode. Skipping..."
-            return 1  # Indicating failure
+            return 1
         fi
     done
 
