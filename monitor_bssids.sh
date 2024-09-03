@@ -5,8 +5,7 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
 # File containing the list of SSID:BSSID, Channel pairs
 BSSID_FILE="$SCRIPT_DIR/bssids.txt"
-# Wireless interface in monitor mode
-INTERFACE="wlan0mon"
+INTERFACE="$1"
 # Output file for monitoring results
 OUTPUT_FILE="$SCRIPT_DIR/monitoring_results.txt"
 # Log file for detailed logging
@@ -20,7 +19,7 @@ log_message() {
 
 # Function to monitor BSSIDs
 monitor_bssids() {
-    log_message "Starting monitoring of BSSIDs..."
+    log_message "Starting monitoring of BSSIDs using interface $INTERFACE..."
     echo "Monitoring started at $(date)" > "$OUTPUT_FILE"
 
     while IFS= read -r line; do
@@ -28,7 +27,7 @@ monitor_bssids() {
         BSSID=$(echo "$line" | cut -d ',' -f 1 | cut -d ' ' -f 2)
         CHANNEL=$(echo "$line" | cut -d ',' -f 2 | cut -d ' ' -f 3)
 
-        log_message "Monitoring BSSID $BSSID (SSID: $SSID) on Channel $CHANNEL..."
+        log_message "Monitoring BSSID $BSSID (SSID: $SSID) on Channel $CHANNEL using $INTERFACE..."
 
         while true; do
             # Run airodump-ng to capture data on the specific channel

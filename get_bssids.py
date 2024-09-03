@@ -1,8 +1,9 @@
 import subprocess
 import time
 import os
+import sys
 
-def get_bssid(ssid_list_file, output_file, interface="wlan0mon", scan_time=10):
+def get_bssid(ssid_list_file, output_file, interface, scan_time=10):
     # Get the directory of the current script
     script_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -19,7 +20,7 @@ def get_bssid(ssid_list_file, output_file, interface="wlan0mon", scan_time=10):
 
     try:
         for ssid in ssids:
-            print(f"Scanning for SSID: {ssid}")
+            print(f"Scanning for SSID: {ssid} using interface {interface}")
             # Run airodump-ng command to scan for the SSID
             command = [
                 "sudo", "airodump-ng", "--essid", ssid, "--write", "scan_output", "--output-format", "csv", interface
@@ -28,11 +29,8 @@ def get_bssid(ssid_list_file, output_file, interface="wlan0mon", scan_time=10):
             time.sleep(scan_time)
             subprocess.call(["sudo", "pkill", "airodump-ng"])  # Stop airodump-ng after the scan
 
-            # Since scan_output-01.csv will be saved in the current working directory,
-            # we need to reference it directly without using the script directory.
-            scan_output_file = 'scan_output-01.csv'
-
             # Parse the csv output to find the BSSID
+            scan_output_file = 'scan_output-01.csv'
             with open(scan_output_file, 'r') as csv_file:
                 lines = csv_file.readlines()
 
@@ -61,11 +59,10 @@ def get_bssid(ssid_list_file, output_file, interface="wlan0mon", scan_time=10):
 
     return bssid_dict
 
-
 if __name__ == "__main__":
-    ssid_list_file = "ssids.txt"
-    output_file = "bssids.txt"
-    interface = "wlan0mon"
+    ssid_list_file = sys.argv[1]
+    output_file = sys.argv[2]
+    interface = sys.argv[3]
 
     bssids = get_bssid(ssid_list_file, output_file, interface)
     print("\nSummary of BSSIDs and Channels:")
