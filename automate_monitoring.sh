@@ -5,6 +5,7 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 SSID_LIST_FILE="ssids.txt"
 BSSID_OUTPUT_FILE="bssids.txt"
 LOCKFILE="/tmp/monitoring.lock"
+LOGFILE="$SCRIPT_DIR/monitoring.log"
 
 # Paths to the scripts
 GET_BSSIDS_SCRIPT="$SCRIPT_DIR/get_bssids.py"
@@ -73,13 +74,11 @@ check_executable() {
 }
 
 # Check if the lock file exists
-if [ -e "$LOCKFILE" ]; then
-    echo "Monitoring script is already running. Exiting."
-    exit 1
-fi
+exec 200>"$LOCKFILE"
+flock -n 200 || { echo "Monitoring script is already running. Exiting."; exit 1; }
 
-# Create a lock file
-touch "$LOCKFILE"
+# Redirect all output to a log file in the same directory as the script
+exec > >(tee -a "$LOGFILE") 2>&1
 
 # Trap exit signals to ensure the lock file is removed if the script is interrupted
 trap cleanup INT TERM EXIT
@@ -95,12 +94,20 @@ echo "Using interface: $INTERFACE"
 # Step 1: Run the Python script to get BSSIDs and Channels
 echo "Running Python script to retrieve BSSIDs and Channels..."
 sudo python3 "$GET_BSSIDS_SCRIPT" "$SSID_LIST_FILE" "$BSSID_OUTPUT_FILE" "$INTERFACE"
+if [ $? -ne 0 ]; then
+    echo "Error: Python script failed. Exiting."
+    cleanup
+fi
 
 echo "BSSIDs and Channels retrieved successfully."
 
 # Step 2: Run the Bash script to monitor BSSIDs
 echo "Starting monitoring of BSSIDs..."
 sudo "$MONITOR_BSSIDS_SCRIPT" "$INTERFACE"
+if [ $? -ne 0 ]; then
+    echo "Error: Monitoring script failed. Exiting."
+    cleanup
+fi
 
 echo "Monitoring complete."
 
